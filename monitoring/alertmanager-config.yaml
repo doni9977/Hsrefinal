@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-config
+  namespace: sre-capstone
+type: Opaque
+stringData:
+  alertmanager.yaml: |-
+    global:
+      telegram_api_url: "https://api.telegram.org"
+    route:
+      receiver: 'telegram-notifications'
+      group_by: ['alertname', 'namespace']
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 1h
+    receivers:
+    - name: 'telegram-notifications'
+      telegram_configs:
+      - bot_token: '8917963174:AAHFuXCl_9EKIL6NqoempJ8n34TPvk8IZXY'
+        chat_id: '6383581458'
+        parse_mode: 'HTML'
+        message: |-
+          <b>[PROD] Alert Triggered!</b>
+          <b>Alert:</b> {{ .CommonAnnotations.summary }}
+          <b>Severity:</b> {{ .CommonLabels.severity }}
+          <b>Description:</b> {{ .CommonAnnotations.description }}
