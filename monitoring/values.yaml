@@ -1,0 +1,18 @@
+grafana:
+  adminPassword: "admin" # Пароль для входа (логин: admin)
+  persistence:
+    enabled: false # Отключаем постоянные диски, чтобы не забивать память мака
+
+prometheus:
+  prometheusSpec:
+    # Заставляем Prometheus искать ServiceMonitor во ВСЕХ пространствах имен
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+# Отключаем тяжелые компоненты, которые не нужны в Minikube, ради экономии ресурсов CPU/RAM
+alertmanager:
+  enabled: true
+kubeStateMetrics:
+  enabled: true
+nodeExporter:
+  enabled: true
