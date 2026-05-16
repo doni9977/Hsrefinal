@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-
+     
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
@@ -28,7 +28,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./app 
+          context: ./app  
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/capstone-app:latest
@@ -36,18 +36,12 @@ jobs:
 
   deploy:
     needs: build-and-push
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
-
-     
+      
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f k8s/
