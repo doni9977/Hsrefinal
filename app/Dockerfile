@@ -1,8 +1,10 @@
-# Шаг 1: Сборка приложения
+
 FROM golang:1.22-alpine AS builder
 WORKDIR /app
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux GO111MODULE=off go build -o main .
+
+
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/

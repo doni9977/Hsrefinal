@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/cicd
 
 jobs:
   build-and-push:
@@ -35,16 +36,20 @@ jobs:
 
   deploy:
     needs: build-and-push
-    runs-on: self-hosted  # ЗАПУСКАЕТСЯ НА МАКЕ ДОННИ
+    runs-on: [self-hosted, minikube]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set Kubernetes Context
+        run: kubectl config use-context minikube
+
       - name: Apply Kubernetes Manifests
         run: |
-          kubectl apply -f k8s/
+          kubectl apply -f k8s/deployment.yaml -n sre-capstone
+          kubectl apply -f k8s/service.yaml -n sre-capstone
 
       - name: Deploy dynamic image tag to Cluster
         run: |
-          kubectl set image deployment/capstone-app capstone-app=${{ secrets.DOCKER_USERNAME }}/capstone-app:${{ needs.build-and-push.outputs.image_tag }}
-          kubectl rollout status deployment/capstone-app
+          kubectl set image deployment/capstone-app capstone-app=${{ secrets.DOCKER_USERNAME }}/capstone-app:${{ needs.build-and-push.outputs.image_tag }} -n sre-capstone
+          kubectl rollout status deployment/capstone-app -n sre-capstone
