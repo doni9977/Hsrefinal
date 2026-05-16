@@ -14,7 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
@@ -36,23 +35,15 @@ jobs:
 
   deploy:
     needs: build-and-push
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # ЗАПУСКАЕТСЯ НА МАКЕ ДОННИ
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
-
-     
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f k8s/
 
-      
       - name: Deploy dynamic image tag to Cluster
         run: |
           kubectl set image deployment/capstone-app capstone-app=${{ secrets.DOCKER_USERNAME }}/capstone-app:${{ needs.build-and-push.outputs.image_tag }}
