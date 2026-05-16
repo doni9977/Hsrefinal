@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prediction-market-monitor
+  namespace: sre-capstone
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: prediction-market-app # Этот лейбл должен быть у сервиса приложения Участника 2
+  namespaceSelector:
+    matchNames:
+      - sre-capstone
+  endpoints:
+  - port: web # Имя порта в сервисе приложения, отдающего метрики
+    path: /metrics
+    interval: 15s
