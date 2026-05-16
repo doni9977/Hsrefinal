@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: capstone-app-service
+  labels:
+    app: capstone-app
+spec:
+  type: ClusterIP # Для SRE-проектов обычно используется ClusterIP или LoadBalancer
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: capstone-app
